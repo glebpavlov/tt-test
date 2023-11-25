@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ITrip, Trip, TripType } from "../../core/models/trip.model";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { AutoUnsubscribe } from "../../common/decorators/auto-unsubscribe.decorator";
@@ -24,9 +16,18 @@ interface ITripFormValues extends Partial<Omit<ITrip, "date">> {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 @AutoUnsubscribe(['formChangeSubscription'])
-export class TripComponent implements OnChanges {
+export class TripComponent implements OnInit {
+
+  private _trip: Trip;
   @Input()
-  public trip: Trip;
+  public set trip(value: Trip) {
+    // preventing mutation
+    this._trip = {...value};
+  }
+
+  public get trip(): Trip {
+    return this._trip;
+  }
 
   public expanded = true;
 
@@ -34,21 +35,21 @@ export class TripComponent implements OnChanges {
   public remove = new EventEmitter<undefined>();
 
   @Output()
-  public change = new EventEmitter<Trip>();
+  public save = new EventEmitter<Trip>();
 
   public form: FormGroup;
 
   public tripTypes = Object.keys(TripType);
 
   /**
-   * Form change subscription
+   * Form save subscription
    * @private
    */
   private formChangeSubscription: Subscription;
 
   private initForm() {
     this.form = this.formBuilder.group({
-      date: [this.dateOfTrip, [Validators.required]],
+      date: [this.trip?.date ? TuiDay.fromLocalNativeDate(this.trip?.date) : null, [Validators.required]],
       odometerStart: [this.trip?.odometerStart, [Validators.required, Validators.min(0)]],
       odometerEnd: [this.trip?.odometerEnd, [Validators.required, Validators.min(0)]],
       type: [this.trip?.type, [Validators.required]]
@@ -57,28 +58,32 @@ export class TripComponent implements OnChanges {
     this.formChangeSubscription = this.form.valueChanges
       .pipe(
         // filtering invalid form data
-        filter(()=>this.form.valid),
+        filter(() => this.form.valid),
         // cleaning up flood triggers
         debounceTime(500),
         // preventing mutation
         map((formValues: ITripFormValues): ITripFormValues => ({...formValues})),
         // converting TuiDay to native date
-        map((formValues: ITripFormValues): ITrip => formValues.date? {...formValues, date: formValues.date.toLocalNativeDate()}: formValues as unknown as ITrip),
+        map((formValues: ITripFormValues): ITrip => formValues.date ? {
+          ...formValues,
+          date: formValues.date.toLocalNativeDate()
+        } : formValues as unknown as ITrip),
         // creating a new instance
         map((values: ITrip) => (new Trip(values))),
         // let's emit the trip outside
-        tap((trip: Trip)=>this.change.emit(trip))
-        )
+        tap((trip: Trip) => this.save.emit(trip))
+      )
       .subscribe();
   }
 
   public get dateOfTrip(): Date {
-    return this.form?.get('date')?.value?.toLocalNativeDate() || this.trip?.date || undefined;
+    return this.form?.get('date')?.value?.toLocalNativeDate?.() || this.trip?.date || undefined;
   }
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder) {
+  }
 
-  public ngOnChanges(_changes: SimpleChanges): void {
+  public ngOnInit(): void {
     this.initForm();
   }
 

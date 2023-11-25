@@ -3,8 +3,11 @@
     <button size="s" tuiButton (click)="add()">Add trip</button>
     <tui-elastic-container class="b-form tui-space_top-4">
       <div *ngFor="let item of trips; let index = index" class="wrapper">
-        <tt-test-trip (remove)="remove(index)" [trip]="item"></tt-test-trip>
+        <tt-test-trip (save)="save(index, $event)" (remove)="remove(index)" [trip]="item"></tt-test-trip>
       </div>
+
+      <div>Trips Array:</div>
+      {{trips | json }}
     </tui-elastic-container>
   </div>
 </tui-root>

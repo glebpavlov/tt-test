@@ -12,12 +12,17 @@ import { Trip } from "../core/models/trip.model";
 export class AppComponent {
   public trips: Trip[] = [];
 
-  add(): void {
+  public add(): void {
     this.trips = this.trips.concat(new Trip());
-
   }
 
-  remove(index: number): void {
+  public remove(index: number): void {
     this.trips = tuiArrayRemove(this.trips, index);
   }
+
+  public save(index: number, trip: Trip): void {
+    console.log(trip)
+    this.trips[index] = trip;
+  }
+
 }
