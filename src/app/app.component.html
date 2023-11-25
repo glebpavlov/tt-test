@@ -1,13 +1,19 @@
 <tui-root>
   <div class="tui-container">
     <button size="s" tuiButton (click)="add()">Add trip</button>
+    <button size="s" tuiButton (click)="loadDemoData()">Load demo data</button>
     <tui-elastic-container class="b-form tui-space_top-4">
-      <div *ngFor="let item of trips; let index = index" class="wrapper">
-        <tt-test-trip (save)="save(index, $event)" (remove)="remove(index)" [trip]="item"></tt-test-trip>
+      <div *ngFor="let trip of trips; let index = index; trackBy:tripTrackBy" class="wrapper"
+           [style.background-color]="getColor(trip)">
+        <tt-test-trip (save)="save(index, $event)" (remove)="remove(index)" [trip]="trip"></tt-test-trip>
       </div>
 
       <div>Trips Array:</div>
-      {{trips | json }}
+      <div>{{trips | json }}</div>
+
+      <div>Max distance work trips days:</div>
+      <div>{{ twelveWeekMaxDistanceDays | json }}</div>
     </tui-elastic-container>
+    <button size="m" tuiButton (click)="calculate()">Calculate!</button>
   </div>
 </tui-root>
