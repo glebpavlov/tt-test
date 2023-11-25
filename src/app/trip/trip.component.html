@@ -1,0 +1,56 @@
+<h3 class="title">
+  <button
+    appearance="secondary"
+    icon="tuiIconChevronDown"
+    shape="rounded"
+    size="s"
+    title="Expand"
+    tuiIconButton
+    class="expand"
+    [class.expand_open]="expanded"
+    (click)="expanded = !expanded"></button>
+  Trip for {{dateOfTrip | date}}
+  <button
+    appearance="flat"
+    icon="tuiIconTrash"
+    shape="rounded"
+    size="s"
+    title="Remove"
+    tuiIconButton
+    class="remove"
+    (click)="remove.emit()"
+  ></button>
+</h3>
+<tui-expand [expanded]="expanded">
+  <form *ngIf="form" [formGroup]="form">
+    <div class="tui-form__row">
+      <tui-input-date
+        formControlName="date"
+        tuiTextfieldSize="s"
+      >
+        Choose the date of the trip
+      </tui-input-date>
+    </div>
+    <div class="tui-form__row">
+      <tui-input-number
+        formControlName="odometerStart"
+        tuiTextfieldSize="s"
+        tuiHintContent="Enter the odometer data before the start of the trip"
+        tuiTextfieldPostfix="km"
+      >
+        Odometer data before the trip
+      </tui-input-number>
+    </div>
+    <div class="tui-form__row">
+      <tui-input-number
+        formControlName="odometerEnd"
+        tuiTextfieldSize="s"
+        tuiHintContent="Enter the odometer data after the end of the trip"
+        tuiTextfieldPostfix="km"
+      >
+        Odometer data after the trip
+      </tui-input-number>
+
+    </div>
+  </form>
+</tui-expand>
