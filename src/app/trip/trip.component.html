@@ -9,7 +9,10 @@
     class="expand"
     [class.expand_open]="expanded"
     (click)="expanded = !expanded"></button>
-  Trip for {{dateOfTrip | date}}
+  Trip
+  <ng-container *ngIf="dateOfTrip">
+    for {{dateOfTrip | date}}
+  </ng-container>
   <button
     appearance="flat"
     icon="tuiIconTrash"
@@ -50,7 +53,21 @@
       >
         Odometer data after the trip
       </tui-input-number>
-
+    </div>
+    <div class="tui-form__row">
+      <tui-select
+        tuiTextfieldSize="s"
+        formControlName="type">
+        Choose the type of trip
+        <input
+          placeholder="Choose the type of trip"
+          tuiTextfield
+        />
+        <tui-data-list-wrapper
+          *tuiDataList
+          [items]="tripTypes"
+        ></tui-data-list-wrapper>
+      </tui-select>
     </div>
   </form>
 </tui-expand>

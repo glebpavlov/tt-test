@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { tuiArrayRemove } from "@taiga-ui/cdk";
 import { Trip } from "../core/models/trip.model";
 

@@ -6,10 +6,10 @@ export class Trip implements ITrip {
   /**
    * Date of trip
    */
-  public date: Date = new Date();
-  public odometerStart: number = 0;
-  public odometerEnd: number = 0;
-  public type: TripType = TripType.Personal;
+  public date: Date;
+  public odometerStart: number;
+  public odometerEnd: number;
+  public type: TripType;
 
   constructor(source?: ITrip) {
     Object.assign(this, source);
@@ -17,14 +17,14 @@ export class Trip implements ITrip {
 }
 
 export enum TripType {
-  Work = 'work',
-  Personal = 'personal'
+  work = "work",
+  personal = "personal"
 }
 
 export interface ITrip {
   // date of trip
-  date: Date;
-  odometerStart: number;
-  odometerEnd: number;
-  type: TripType;
+  date?: Date;
+  odometerStart?: number;
+  odometerEnd?: number;
+  type?: TripType;
 }

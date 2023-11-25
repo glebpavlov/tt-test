@@ -12,7 +12,14 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { TripComponent } from './trip/trip.component';
-import { TuiElasticContainerModule, TuiInputDateModule, TuiInputModule, TuiInputNumberModule } from "@taiga-ui/kit";
+import {
+  TuiDataListWrapperModule,
+  TuiElasticContainerModule,
+  TuiInputDateModule,
+  TuiInputModule,
+  TuiInputNumberModule,
+  TuiSelectModule
+} from "@taiga-ui/kit";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
@@ -36,7 +43,9 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
     TuiInputNumberModule,
     TuiHintModule,
     TuiFormatDatePipeModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TuiSelectModule,
+    TuiDataListWrapperModule
   ],
   providers: [],
   bootstrap: [AppComponent]
