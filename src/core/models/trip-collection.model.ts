@@ -15,9 +15,13 @@ export interface IDaysTripTypePercentage {
 
 export class TripCollection {
 
+  /**
+   * trips of this collection
+   */
   public trips: Trip[];
 
   constructor(tripsData: ITrip[] = []) {
+    // creating trip instances
     this.trips = tripsData.map((data) => new Trip(data));
   }
 
@@ -30,7 +34,7 @@ export class TripCollection {
       // this day is not yet in the object
       if (!tripsAccum[+trip.date]) {
         // creating an object based on trip types in enum TripType
-        tripsAccum[+trip.date] = Object.keys(TripType).reduce((tripTypeAccum, TripTypeKey)=>{
+        tripsAccum[+trip.date] = Object.keys(TripType).reduce((tripTypeAccum, TripTypeKey) => {
           // the starting value will be 0
           tripTypeAccum[TripType[TripTypeKey]] = 0;
           return tripTypeAccum;
@@ -48,20 +52,49 @@ export class TripCollection {
    */
   public getDaysTripTypePercentage(targetTypeTrip: TripType = TripType.work): IDaysTripTypePercentage {
     // get distances by day by type of trip
-    const daysDistance = this.getDaysUsageTypeDistance();
+    const daysDistance: IDaysUsageTypeDistance = this.getDaysUsageTypeDistance();
     // array of trip days for further search
-    const tripDays = Object.keys(daysDistance);
-    return tripDays.reduce((accum, dayDate)=>{
-      const dayTrip = daysDistance[dayDate];
+    const tripDays: string[] = Object.keys(daysDistance);
+    // collect information as a percentage
+    return tripDays.reduce((accum, dayDate) => {
+      const dayTrip: IUsageTypeDistance = daysDistance[dayDate];
       // sum up the entire distance for all types of trip
-      const totalDistance = Object.keys(dayTrip).reduce((sum, type)=>(sum + dayTrip[type]), 0);
+      const totalDistance: number = Object.keys(dayTrip).reduce((sum: number, type: string) => (sum + dayTrip[type]), 0);
       // calculate the percentage of the selected trip type
       accum[dayDate] = calculatePercentage((dayTrip[targetTypeTrip] || 0), totalDistance);
       return accum;
     }, {});
   }
 
+  public getPeriodsDaysTrip(periodAsDays: number = 84) {
+    const daysAsMilliseconds = periodAsDays * 24 * 60 * 60 * 1000;
+    const periods = [];
+    for (let startTripIndex = 0; startTripIndex < this.trips.length; startTripIndex++) {
+      const startDate = +this.trips[startTripIndex].date
+      const periodDays = [startDate];
+      for (let endTripIndex = startTripIndex + 1; endTripIndex < this.trips.length; endTripIndex++) {
+        const endDate = +this.trips[endTripIndex].date;
+        if (endDate - startDate > daysAsMilliseconds) {
+          break;
+        }
+        periodDays.push(endDate);
+      }
+      periods.push(periodDays);
+    }
+    return periods;
+  }
 
+  /**
+   * get average percentage of use of the selected trip type for the selected period
+   * @param targetTypeTrip
+   * @param periodDays
+   */
+  public getAveragePercentage(targetTypeTrip: TripType = TripType.work, periodDays: number = 84): any[] {
+    return [];
+  }
 
 
 }
+
+
+

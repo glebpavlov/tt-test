@@ -1,9 +1,10 @@
 import { IDaysTripTypePercentage, IDaysUsageTypeDistance, TripCollection } from "./trip-collection.model";
-import { oneDayData } from "./test-values.spec";
+import { oneDayData, thirteenWeeksData } from "./test-values.spec";
 import { TripType } from "./trip.model";
 
 describe('TripCollection Class', () => {
   const oneDayCollection = new TripCollection(oneDayData);
+  const thirteenWeeksCollection = new TripCollection(thirteenWeeksData);
   it('should be an object with one day and a working distance of 800 km and a personal distance of 200 km', () => {
     const expectedData: IDaysUsageTypeDistance = {"1640984400000" : {[TripType.work]: 800, [TripType.personal]: 200}};
     const result = oneDayCollection.getDaysUsageTypeDistance();
@@ -23,5 +24,12 @@ describe('TripCollection Class', () => {
     const expectedData: IDaysTripTypePercentage = {"1640984400000": 20};
 
     expect(result).toEqual(expectedData);
+  })
+
+  it('in 13 weeks there should be 10 different trip periods', () => {
+    const result =  thirteenWeeksCollection.getPeriodsDaysTrip();
+    const expectedLength: number = 10;
+
+    expect(result.length).toBe(expectedLength)
   })
 });
