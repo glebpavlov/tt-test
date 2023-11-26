@@ -1,6 +1,7 @@
 import { ITrip, Trip, TripType } from "./trip.model";
 import { calculatePercentage } from "../../common/utils/calculate-percentage";
 import { averageNumber } from "../../common/utils/average-number";
+import * as _ from "lodash";
 
 export interface IDaysUsageTypeDistance {
   [k: string]: IUsageTypeDistance
@@ -14,7 +15,14 @@ export interface IDaysTripTypePercentage {
   [k: string]: number;
 }
 
+export interface IAveragePercentage {
+  period: number[],
+  average: number;
+}
+
 export class TripCollection {
+  private defaultDaysPeriod = 84;
+  private defaultTripType = TripType.work;
 
   /**
    * trips of this collection
@@ -49,9 +57,9 @@ export class TripCollection {
 
   /**
    * returns the percentage of distance of the selected trip type by day
-   * @param targetTypeTrip selected trip type from enum TripType. Default TripType.work
+   * @param targetTypeTrip selected trip type from enum TripType
    */
-  public getDaysTripTypePercentage(targetTypeTrip: TripType = TripType.work): IDaysTripTypePercentage {
+  public getDaysTripTypePercentage(targetTypeTrip: TripType = this.defaultTripType): IDaysTripTypePercentage {
     // get distances by day by type of trip
     const daysDistance: IDaysUsageTypeDistance = this.getDaysUsageTypeDistance();
     // array of trip days for further search
@@ -71,7 +79,7 @@ export class TripCollection {
    * Returns arrays of travel dates separated by the selected date range.
    * @param periodAsDays number of days
    */
-  public getPeriodsDaysTrip(periodAsDays: number = 84) {
+  public getPeriodsDaysTrip(periodAsDays: number = this.defaultDaysPeriod) {
     // for further calculation we need days in milliseconds
     const daysAsMilliseconds = periodAsDays * 24 * 60 * 60 * 1000;
     const periods = [];
@@ -88,9 +96,9 @@ export class TripCollection {
         periodDays.add(endDate);
         periods.push([...periodDays]);
       }
-
     }
-    return periods;
+    // remove duplicates
+    return _.uniqWith(periods, _.isEqual).filter(v=>!!v.length);
   }
 
   /**
@@ -98,15 +106,34 @@ export class TripCollection {
    * @param targetTypeTrip
    * @param periodDays
    */
-  public getAveragePercentage(targetTypeTrip: TripType = TripType.work, periodDays: number = 84): any[] {
+  public getAveragePercentage(targetTypeTrip: TripType = this.defaultTripType, periodDays: number = this.defaultDaysPeriod): IAveragePercentage[] {
     const daysTripTypePercentage = this.getDaysTripTypePercentage(targetTypeTrip);
     const periodsDaysTrip = this.getPeriodsDaysTrip(periodDays);
 
-    return periodsDaysTrip.map((period) => {
-      return averageNumber(period.map((day) =>daysTripTypePercentage[day]));
+    return periodsDaysTrip.map((period: number[]) => {
+      return {period, average: averageNumber(period.map((day) => daysTripTypePercentage[day]))};
     });
   }
 
+
+  /**
+   * Returns data by period of the most used trip type as a percentage.
+   * The percentage can be the same for different periods, so an array is returned
+   * @param targetTypeTrip
+   * @param periodDays
+   * @param format
+   */
+  public getMaxTripTypePercentagePeriod(targetTypeTrip: TripType = this.defaultTripType, periodDays: number = this.defaultDaysPeriod, format: 'timestamp' | 'formatted' = "timestamp") {
+    let averagePercentage: any = this.getAveragePercentage(targetTypeTrip, periodDays);
+    if(format === "formatted"){
+      // If a formatted view is required
+      averagePercentage = averagePercentage.map(v=>({...v, period: v.period.map(time=>new Date(time).toISOString())}))
+    }
+    // calculate the maximum percentage
+    const maxPercentage: number = Math.max.apply(null, averagePercentage.map((value) => value.average));
+    // filter all periods when the usage percentage was less than the maximum found percentage
+    return averagePercentage.filter((value) => value.average >= maxPercentage);
+  }
 
 }
 

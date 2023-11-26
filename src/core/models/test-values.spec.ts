@@ -86,6 +86,5 @@ export const thirteenWeeksData = [
     odometerEnd: 200001,
     type: TripType.personal
   },
-
 ];
 // "2021-05-02T21:00:00Z"
