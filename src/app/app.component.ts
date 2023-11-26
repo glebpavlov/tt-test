@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { tuiArrayRemove } from "@taiga-ui/cdk";
 import { Trip, TripType } from "../core/models/trip.model";
-import { tripPreset } from "./debug-presets";
+import { oneDayData } from "../core/models/test-values.spec";
 import { maxWorkTripDistances } from "../common/utils/max-work-trip-distances";
 import { randomColor } from "../common/utils/random-color";
 
@@ -35,7 +35,7 @@ export class AppComponent {
   }
 
   public loadDemoData() {
-    this.trips = tripPreset;
+    this.trips = oneDayData;
   }
 
   public getColor(trip: Trip){
