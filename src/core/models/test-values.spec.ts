@@ -77,13 +77,13 @@ export const thirteenWeeksData = [
   {
     date: new Date("2021-05-02T21:00:00Z"),
     odometerStart: 8001,
-    odometerEnd: 8005,
+    odometerEnd: 200000,
     type: TripType.work
   },
   {
     date: new Date("2021-05-02T21:00:00Z"),
-    odometerStart: 8005,
-    odometerEnd: 8006,
+    odometerStart: 200000,
+    odometerEnd: 200001,
     type: TripType.personal
   },
 

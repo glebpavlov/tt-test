@@ -10,7 +10,7 @@ describe('TripCollection Class', () => {
     const result = oneDayCollection.getDaysUsageTypeDistance();
 
     expect(result).toEqual(expectedData);
-  })
+  });
 
   it('should be an object with one day 80% work usage', () => {
     const result = oneDayCollection.getDaysTripTypePercentage(TripType.work);
@@ -24,12 +24,12 @@ describe('TripCollection Class', () => {
     const expectedData: IDaysTripTypePercentage = {"1640984400000": 20};
 
     expect(result).toEqual(expectedData);
-  })
+  });
 
-  it('in 13 weeks there should be 10 different trip periods', () => {
-    const result =  thirteenWeeksCollection.getPeriodsDaysTrip();
-    const expectedLength: number = 10;
+  it('in 13 weeks there should be 38 trip periods', () => {
+    const result = thirteenWeeksCollection.getPeriodsDaysTrip(84);
+    const expectedLength: number = 38;
 
-    expect(result.length).toBe(expectedLength)
-  })
+    expect(result.length).toBe(expectedLength);
+  });
 });

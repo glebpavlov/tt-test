@@ -1,5 +1,6 @@
 import { ITrip, Trip, TripType } from "./trip.model";
 import { calculatePercentage } from "../../common/utils/calculate-percentage";
+import { averageNumber } from "../../common/utils/average-number";
 
 export interface IDaysUsageTypeDistance {
   [k: string]: IUsageTypeDistance
@@ -66,20 +67,28 @@ export class TripCollection {
     }, {});
   }
 
+  /**
+   * Returns arrays of travel dates separated by the selected date range.
+   * @param periodAsDays number of days
+   */
   public getPeriodsDaysTrip(periodAsDays: number = 84) {
+    // for further calculation we need days in milliseconds
     const daysAsMilliseconds = periodAsDays * 24 * 60 * 60 * 1000;
     const periods = [];
     for (let startTripIndex = 0; startTripIndex < this.trips.length; startTripIndex++) {
       const startDate = +this.trips[startTripIndex].date
-      const periodDays = [startDate];
+      const periodDays = new Set();
+      // check the next trip days to see if they are within the selected range
       for (let endTripIndex = startTripIndex + 1; endTripIndex < this.trips.length; endTripIndex++) {
         const endDate = +this.trips[endTripIndex].date;
+        //if the date differs by more than periodAsDays, then these days are out of range and we stop the search
         if (endDate - startDate > daysAsMilliseconds) {
           break;
         }
-        periodDays.push(endDate);
+        periodDays.add(endDate);
+        periods.push([...periodDays]);
       }
-      periods.push(periodDays);
+
     }
     return periods;
   }
@@ -90,7 +99,12 @@ export class TripCollection {
    * @param periodDays
    */
   public getAveragePercentage(targetTypeTrip: TripType = TripType.work, periodDays: number = 84): any[] {
-    return [];
+    const daysTripTypePercentage = this.getDaysTripTypePercentage(targetTypeTrip);
+    const periodsDaysTrip = this.getPeriodsDaysTrip(periodDays);
+
+    return periodsDaysTrip.map((period) => {
+      return averageNumber(period.map((day) =>daysTripTypePercentage[day]));
+    });
   }
 
 
